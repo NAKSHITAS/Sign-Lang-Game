@@ -43,9 +43,7 @@ fun NavGraph(
         composable("library") {
             LibraryScreen(
                 currentScreen = currentScreen,
-                onScreenChange = onScreenChange,
-                imageItems = images,
-                videoItems = videos
+                onScreenChange = onScreenChange
             )
         }
     }

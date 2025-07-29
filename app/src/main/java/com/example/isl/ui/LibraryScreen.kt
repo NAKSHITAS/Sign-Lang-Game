@@ -13,6 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +27,8 @@ import coil.compose.AsyncImage
 import com.example.isl.data.MediaItem
 import com.example.isl.data.MediaType
 import androidx.compose.foundation.lazy.items
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.isl.viewmodel.MediaViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,10 +36,19 @@ import androidx.compose.foundation.lazy.items
 fun LibraryScreen(
     currentScreen: String,
     onScreenChange: (String) -> Unit,
-    imageItems: List<MediaItem>,
-    videoItems: List<MediaItem>
+    imageItems: List<MediaItem> = emptyList(),
+    videoItems: List<MediaItem> = emptyList(),
+    mediaViewModel: MediaViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    
+    // Collect data from ViewModel
+    val images by mediaViewModel.imageItems.collectAsState()
+    val videos by mediaViewModel.videoItems.collectAsState()
+    
+    // Use ViewModel data if available, otherwise fall back to passed parameters
+    val displayImages = if (images.isNotEmpty()) images else imageItems
+    val displayVideos = if (videos.isNotEmpty()) videos else videoItems
 
     Scaffold(
         topBar = {
@@ -61,12 +74,12 @@ fun LibraryScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Image Library (${imageItems.size})",
+                text = "Image Library (${displayImages.size})",
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            if (imageItems.isEmpty()) {
+            if (displayImages.isEmpty()) {
                 Text(
                     text = "No images available.",
                     style = MaterialTheme.typography.bodyMedium,
@@ -74,39 +87,39 @@ fun LibraryScreen(
                 )
             } else {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    items(imageItems) { item ->
+                    items(displayImages) { item ->
                         MediaCard(item)
                     }
                 }
             }
-        }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-        Text(
-            text = "Video Library (${videoItems.size})",
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-
-        if (videoItems.isEmpty()) {
             Text(
-                text = "No videos available.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = "Video Library (${displayVideos.size})",
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
             )
-        } else {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxHeight(),
-                contentPadding = PaddingValues(4.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(videoItems) { item ->
-                    VideoCard(item = item) {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.mediaUrl))
-                        context.startActivity(intent)
+            Spacer(modifier = Modifier.height(12.dp))
+
+            if (displayVideos.isEmpty()) {
+                Text(
+                    text = "No videos available.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxHeight(),
+                    contentPadding = PaddingValues(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(displayVideos) { item ->
+                        VideoCard(item = item) {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.mediaUrl))
+                            context.startActivity(intent)
+                        }
                     }
                 }
             }

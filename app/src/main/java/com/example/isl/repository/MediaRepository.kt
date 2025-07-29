@@ -2,6 +2,7 @@ package com.example.isl.repository
 
 import android.util.Log
 import com.example.isl.data.MediaItem
+import com.example.isl.data.MediaType
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -23,8 +24,12 @@ class MediaRepository {
                     val mediaUrl = doc.getString("mediaUrl") ?: ""
                     val thumbnailUrl = doc.getString("thumbnailUrl") ?: ""
                     val mediaTypeString = doc.getString("mediaType") ?: "IMAGE"
-                    val mediaType =
-                        enumValueOf<com.example.isl.data.MediaType>(mediaTypeString.uppercase())
+                    val mediaType = try {
+                        MediaType.valueOf(mediaTypeString.uppercase())
+                    } catch (e: IllegalArgumentException) {
+                        Log.w("MediaRepo", "Unknown media type: $mediaTypeString, defaulting to IMAGE")
+                        MediaType.IMAGE
+                    }
 
                     MediaItem(
                         id = id,
