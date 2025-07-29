@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import com.example.isl.data.MediaItem
 import com.example.isl.data.Level
 import com.google.firebase.auth.FirebaseAuth
+import com.example.isl.utils.FirestoreDataUploader
 import android.util.Base64
 import android.util.Log
 import java.security.MessageDigest
@@ -30,6 +31,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         printAppSignatures(this) // 🔐 Prints SHA1 to Logcat
 
+        // Upload sample data (run this once, then comment out)
+        // FirestoreDataUploader().uploadSampleData()
         enableEdgeToEdge()
         setContent {
             ISLTheme {
