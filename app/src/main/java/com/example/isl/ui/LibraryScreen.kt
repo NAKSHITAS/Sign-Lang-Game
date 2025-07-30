@@ -74,7 +74,7 @@ fun LibraryScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Image Library (${displayImages.size})",
+                text = "Image Library",
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -96,7 +96,7 @@ fun LibraryScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Video Library (${displayVideos.size})",
+                text = "Video Library",
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
             )
             Spacer(modifier = Modifier.height(12.dp))

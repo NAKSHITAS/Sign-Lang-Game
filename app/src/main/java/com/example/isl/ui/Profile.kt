@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -32,6 +33,7 @@ import com.example.isl.R
 import com.example.isl.data.Reward
 import com.example.isl.viewmodel.UserViewModel
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 
 
 @Composable
@@ -42,7 +44,13 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     val userState by userViewModel.uiState.collectAsState()
+
+    // Load user data when the screen is first displayed
+    LaunchedEffect(Unit) {
+        userViewModel.loadUserFromFirestore()
+    }
 
     val userName = userState.name.ifEmpty { "Loading..." }
     val level = userState.currentLevel
