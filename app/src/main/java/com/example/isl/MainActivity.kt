@@ -1,6 +1,7 @@
 package com.example.isl
 
 
+import android.Manifest
 import android.content.Context
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -23,12 +24,21 @@ import android.util.Log
 import java.security.MessageDigest
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
 
 class MainActivity : ComponentActivity() {
+    private val cameraPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                // Camera will start via Compose
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         printAppSignatures(this) // 🔐 Prints SHA1 to Logcat
+
+        cameraPermission.launch(Manifest.permission.CAMERA)
 
         enableEdgeToEdge()
         setContent {
