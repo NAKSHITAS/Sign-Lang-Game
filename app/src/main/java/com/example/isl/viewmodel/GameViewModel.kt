@@ -40,6 +40,26 @@ class GameViewModel : ViewModel() {
     private val _isEvaluating = MutableStateFlow(false)
     val isEvaluating: StateFlow<Boolean> = _isEvaluating.asStateFlow()
 
+    fun onGestureDetected(detectedLabel: String, confidence: Float) {
+        // Do nothing if we're already evaluating feedback
+        if (_isEvaluating.value) return
+
+        val current = currentSign.value ?: return
+        val expected = current.symbol // your Sign has `symbol` (e.g., "A")
+
+        // Simple exact-match + confidence rule:
+        val match = detectedLabel.equals(expected, ignoreCase = true)
+        // If you prefer using confidence threshold instead, call evaluateWithConfidence().
+        // Here we'll treat strong match (label equals expected && confidence >= 0.8) as success.
+        val confidenceThreshold = 0.8f
+
+        if (match && confidence >= confidenceThreshold) {
+            evaluateWithMLResult(true)
+        } else {
+            // Option: if label matches but confidence is lower, use evaluateWithConfidence to show partial feedback
+            evaluateWithConfidence(confidence, threshold = confidenceThreshold)
+        }
+    }
     /**
      * Initializes a new game session with the provided list of signs.
      * Resets score, index, and state flags.
